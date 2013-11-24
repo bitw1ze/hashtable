@@ -15,7 +15,7 @@ static int __key_compare(const void *k1, size_t s1, const void *k2, size_t s2)
 
 int htab_init(htab *ht, hasher_t func) 
 {
-    int i;
+    size_t i;
 
     if (!ht || !func)
     {
