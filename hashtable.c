@@ -24,14 +24,14 @@ int htab_init(htab *ht, hasher_t func)
     ht->hasher = func;
     ht->compare = NULL;
     ht->count = 0;
-    ht->len = HTAB_INIT_LEN;
-    ht->table = calloc(sizeof(htab_node *), ht->len);
+    ht->size = HTAB_INIT_SIZE;
+    ht->table = calloc(sizeof(htab_node *), ht->size);
     if (!ht->table)
     {
         return -1;
     }
 
-    for (i = 0; i < ht->len; ++i)
+    for (i = 0; i < ht->size; ++i)
     {
         ht->table[i] = NULL;
     }
@@ -49,7 +49,7 @@ int htab_put(htab *ht, const void *key, size_t key_size, const void *val, size_t
         return -1;
     }
 
-    index = ht->hasher(key, key_size, ht->len);
+    index = ht->hasher(key, key_size, ht->size);
     node = ht->table[index];
 
     if (node)
@@ -111,7 +111,7 @@ void *htab_get(htab *ht, const void *key, size_t key_size)//, void **val, size_t
         return NULL;
     }
 
-    index = ht->hasher(key, key_size, ht->len);
+    index = ht->hasher(key, key_size, ht->size);
     node = ht->table[index];
 
     while (node && node->key && node->val)
@@ -145,11 +145,11 @@ int htab_cleanup(htab *ht)
     size_t i;
     htab_node *node;
 
-    if (!ht->table || !ht->len)
+    if (!ht->table || !ht->size)
         return -1;
 
     i = 0;
-    for (i = 0; i < ht->len; ++i)
+    for (i = 0; i < ht->size; ++i)
     {
         if (ht->table[i])
         {

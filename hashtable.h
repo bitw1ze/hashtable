@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define HTAB_INIT_LEN 64
+// TODO: increase table size to larger prime when it becomes full
+#define HTAB_INIT_SIZE 71
 
 typedef size_t (*hasher_t)(const void *key, size_t key_size, size_t table_size);
 
@@ -15,8 +16,8 @@ typedef struct __htab_node {
 
 typedef struct __hashtable {
     htab_node **table;
-    size_t len;
-    size_t count;
+    size_t size;
+    size_t count; // unused for now, but needed for when resizing later
     hasher_t hasher;
     int (*compare)(const void *k1, const void *k2);
 } htab;
