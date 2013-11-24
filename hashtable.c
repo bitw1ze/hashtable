@@ -101,14 +101,14 @@ int htab_put(htab *ht, const void *key, size_t key_size, const void *val, size_t
     return 0;
 }
 
-void *htab_get(htab *ht, const void *key, size_t key_size)//, void **val, size_t *val_size)
+int htab_get(htab *ht, const void *key, size_t key_size, void **val, size_t *val_size)
 {
     size_t index;
     htab_node *node;
 
-    if (!ht || !key || !ht->compare_f)
+    if (!ht || !key || !ht->compare_f || !val || !val_size)
     {
-        return NULL;
+        return -1;
     }
 
     index = ht->hash_f(key, key_size, ht->size);
@@ -120,7 +120,9 @@ void *htab_get(htab *ht, const void *key, size_t key_size)//, void **val, size_t
         {
             if (!ht->compare_f(key, key_size, node->key, node->key_size))
             {
-                return node->val;
+                *val = node->val;
+                *val_size = node->val_size;
+                return 0;
             }
             else
             {
@@ -133,7 +135,9 @@ void *htab_get(htab *ht, const void *key, size_t key_size)//, void **val, size_t
         }
     }
 
-    return NULL;
+    *val = NULL;
+    *val_size = 0;
+    return -1;
 }
 
 int htab_cleanup(htab *ht)
