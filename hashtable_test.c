@@ -4,18 +4,6 @@
 #include <assert.h>
 #include "hashtable.h"
 
-size_t hasher(const void *key, size_t key_size, size_t table_size)
-{
-    size_t i;
-    size_t sum = 0;
-    unsigned char *k = (unsigned char *)key;
-    for (i=0; i<key_size; ++i)
-    {
-        sum = (sum + (int)k[i]) % table_size;
-    }
-    return sum;
-}
-
 char *rand_key(void) {
     int i, len;
     
@@ -37,7 +25,7 @@ int main(int argc, const char *argv[])
     size_t size_out;
 
     srand(time(NULL));
-    assert(htab_init(&ht, hasher) == 0);
+    assert(htab_init(&ht, NULL, NULL) == 0);
 
     // put a bunch of key/value pairs in the table
     for (i=0; i<100; ++i)
