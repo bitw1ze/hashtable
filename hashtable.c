@@ -13,7 +13,7 @@ static int __key_compare(const void *k1, size_t s1, const void *k2, size_t s2)
     return memcmp(k1, k2, s1);
 }
 
-int htab_init(htab *ht, hasher_t func) 
+int htab_init(htab *ht, hash_t func)
 {
     size_t i;
 
@@ -21,8 +21,8 @@ int htab_init(htab *ht, hasher_t func)
     {
         return -1;
     }
-    ht->hasher = func;
-    ht->compare = NULL;
+    ht->hash_f = func;
+    ht->compare_f = __key_compare;
     ht->count = 0;
     ht->size = HTAB_INIT_SIZE;
     ht->table = calloc(sizeof(htab_node *), ht->size);
@@ -44,21 +44,21 @@ int htab_put(htab *ht, const void *key, size_t key_size, const void *val, size_t
     size_t index;
     htab_node *node;
     
-    if (!ht || !ht->hasher || !key || !key_size || !val || !val_size)
+    if (!ht || !ht->hash_f || !key || !key_size || !val || !val_size || !ht->compare_f)
     {
         return -1;
     }
 
-    index = ht->hasher(key, key_size, ht->size);
+    index = ht->hash_f(key, key_size, ht->size);
     node = ht->table[index];
 
     if (node)
     {
-        while (node->next && __key_compare(key, key_size, node->key, node->key_size))
+        while (node->next && ht->compare_f(key, key_size, node->key, node->key_size))
         {
             node = node->next;
         }
-        if (__key_compare(key, key_size, node->key, node->key_size))
+        if (ht->compare_f(key, key_size, node->key, node->key_size))
         {
             node->next = malloc(sizeof(htab_node));
             node = node->next;
@@ -106,23 +106,19 @@ void *htab_get(htab *ht, const void *key, size_t key_size)//, void **val, size_t
     size_t index;
     htab_node *node;
 
-    if (!ht || !key)
+    if (!ht || !key || !ht->compare_f)
     {
         return NULL;
     }
 
-    index = ht->hasher(key, key_size, ht->size);
+    index = ht->hash_f(key, key_size, ht->size);
     node = ht->table[index];
 
     while (node && node->key && node->val)
     {
         if (node->key_size == key_size)
         {
-            if ((ht->compare && !ht->compare(key, node->key)))
-            {
-                return node->val;
-            }
-            else if (!memcmp(key, node->key, node->key_size))
+            if (!ht->compare_f(key, key_size, node->key, node->key_size))
             {
                 return node->val;
             }
