@@ -32,7 +32,7 @@ int main(int argc, const char *argv[])
     htab ht;
     int i;
     char *key = NULL;
-    char *val = NULL;
+    int *val = NULL;
 
     srand(time(NULL));
     assert(htab_init(&ht, hasher) == 0);
@@ -46,8 +46,11 @@ int main(int argc, const char *argv[])
 
         htab_put(&ht, key, strlen(key), val, sizeof(int));
         int *v = htab_get(&ht, key, strlen(key));
-        assert(v);
+        printf("%d %d\n", *v, *val);
+        assert(*v == *val);
         printf("%d: %s\n", *v, key);
+        free(val);
+        free(key);
     }
 
     // try to get a bunch of values for keys that probably don't exist
