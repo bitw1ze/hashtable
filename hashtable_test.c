@@ -35,7 +35,7 @@ int main(int argc, const char *argv[])
     char *val = NULL;
 
     srand(time(NULL));
-    htab_init(&ht, hasher);
+    assert(htab_init(&ht, hasher) == 0);
 
     // put a bunch of key/value pairs in the table
     for (i=0; i<100; ++i)
@@ -56,6 +56,8 @@ int main(int argc, const char *argv[])
         key = rand_key();
         htab_get(&ht, key, strlen(key));
     }
+
+    assert(htab_cleanup(&ht) == 0);
 
     puts("pass");
 
