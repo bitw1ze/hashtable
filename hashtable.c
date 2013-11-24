@@ -140,3 +140,36 @@ void *htab_get(htab *ht, const void *key, size_t key_size)//, void **val, size_t
     return NULL;
 }
 
+int htab_cleanup(htab *ht)
+{
+    size_t i;
+    htab_node *node;
+
+    if (!ht->table || !ht->len)
+        return -1;
+
+    i = 0;
+    for (i = 0; i < ht->len; ++i)
+    {
+        if (ht->table[i])
+        {
+            node = ht->table[i];
+            while (node)
+            {
+                if (node->key)
+                    free(node->key);
+                else
+                    return -1;
+
+                if (node->val)
+                    free(node->val);
+                else
+                    return -1;
+
+                node = node->next;
+            }
+        }
+    }
+
+    return 0;
+}

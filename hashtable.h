@@ -22,5 +22,6 @@ typedef struct __hashtable {
 } htab;
 
 int htab_init(htab *ht, hasher_t func);
+int htab_cleanup(htab *ht);
 int htab_put(htab *ht, const void *key, size_t key_size, const void *val, size_t val_size);
 void * htab_get(htab *ht, const void *val, size_t key_size);
