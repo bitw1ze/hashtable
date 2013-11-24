@@ -46,7 +46,6 @@ int main(int argc, const char *argv[])
 
         htab_put(&ht, key, strlen(key), val, sizeof(int));
         int *v = htab_get(&ht, key, strlen(key));
-        printf("%d %d\n", *v, *val);
         assert(*v == *val);
         printf("%d: %s\n", *v, key);
         free(val);
