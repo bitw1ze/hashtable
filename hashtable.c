@@ -1,5 +1,19 @@
 #include "hashtable.h"
 
+static size_t __hash(const void *key, size_t key_size, size_t table_size)
+{
+    size_t i;
+    size_t sum = 0;
+    unsigned char *k = (unsigned char *)key;
+    for (i=0; i<key_size; ++i)
+    {
+        sum = (sum + (int)k[i]) % table_size;
+    }
+    return sum;
+}
+
+
+
 static int __key_compare(const void *k1, size_t s1, const void *k2, size_t s2)
 {
     if (!k1 || !s1 || !k2 || !s2)
@@ -13,16 +27,17 @@ static int __key_compare(const void *k1, size_t s1, const void *k2, size_t s2)
     return memcmp(k1, k2, s1);
 }
 
-int htab_init(htab *ht, hash_t func)
+int htab_init(htab *ht, hash_t hash_f, compare_t compare_f)
 {
     size_t i;
 
-    if (!ht || !func)
+    if (!ht)
     {
         return -1;
     }
-    ht->hash_f = func;
-    ht->compare_f = __key_compare;
+    ht->hash_f = hash_f ? hash_f : __hash;
+    ht->compare_f = compare_f ? compare_f : __key_compare;
+    ht->hash_f = __hash;
     ht->count = 0;
     ht->size = HTAB_INIT_SIZE;
     ht->table = calloc(sizeof(htab_node *), ht->size);

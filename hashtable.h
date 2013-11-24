@@ -22,7 +22,7 @@ typedef struct __hashtable {
     compare_t compare_f;
 } htab;
 
-int htab_init(htab *ht, hash_t func);
+int htab_init(htab *ht, hash_t hash_f, compare_t compare_f);
 int htab_cleanup(htab *ht);
 int htab_put(htab *ht, const void *key, size_t key_size, const void *val, size_t val_size);
 int htab_get(htab *ht, const void *key, size_t key_size, void **val, size_t *val_size);
