@@ -33,6 +33,8 @@ int main(int argc, const char *argv[])
     int i;
     char *key = NULL;
     int *val = NULL;
+    int *val_out;
+    size_t size_out;
 
     srand(time(NULL));
     assert(htab_init(&ht, hasher) == 0);
@@ -44,10 +46,15 @@ int main(int argc, const char *argv[])
         val = malloc(sizeof(int));
         *val = rand() % 256;
 
+        val_out = malloc(sizeof(int));
+
         htab_put(&ht, key, strlen(key), val, sizeof(int));
-        int *v = htab_get(&ht, key, strlen(key));
-        assert(*v == *val);
-        printf("%d: %s\n", *v, key);
+        htab_get(&ht, key, strlen(key), (void **)&val_out, &size_out);
+        assert(*val_out == *val);
+        assert(size_out == sizeof(int));
+        printf("%d: %s\n", *val_out, key);
+
+        free(val_out);
         free(val);
         free(key);
     }
@@ -56,7 +63,12 @@ int main(int argc, const char *argv[])
     for (i=0; i<100; ++i)
     {
         key = rand_key();
-        htab_get(&ht, key, strlen(key));
+        val_out = malloc(sizeof(int));
+
+        htab_get(&ht, key, strlen(key), (void **)&val_out, &size_out);
+
+        free(key);
+        free(val_out);
     }
 
     assert(htab_cleanup(&ht) == 0);
