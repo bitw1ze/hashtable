@@ -1,6 +1,6 @@
 #include "hashtable.h"
 
-static size_t __hash(const void *key, size_t key_size, size_t table_size)
+static size_t __generic_hash(const void *key, size_t key_size, size_t table_size)
 {
     size_t i;
     size_t sum = 0;
@@ -12,9 +12,7 @@ static size_t __hash(const void *key, size_t key_size, size_t table_size)
     return sum;
 }
 
-
-
-static int __key_compare(const void *k1, size_t s1, const void *k2, size_t s2)
+static int __generic_compare(const void *k1, size_t s1, const void *k2, size_t s2)
 {
     if (!k1 || !s1 || !k2 || !s2)
     {
@@ -78,8 +76,8 @@ int htab_init(htab *ht, hash_t hash_f, compare_t compare_f, copy_t kcopy_f, copy
     {
         return -1;
     }
-    ht->hash_f = hash_f ? hash_f : __hash;
-    ht->compare_f = compare_f ? compare_f : __key_compare;
+    ht->hash_f = hash_f ? hash_f : __generic_hash;
+    ht->compare_f = compare_f ? compare_f : __generic_compare;
     ht->kcopy_f = kcopy_f ? kcopy_f : __generic_copy;
     ht->vcopy_f = vcopy_f ? vcopy_f : __generic_copy;
     ht->count = 0;
