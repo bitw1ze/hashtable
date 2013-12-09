@@ -215,6 +215,7 @@ int htab_remove(htab *ht, const void *key, size_t key_size)
 
             __node_cleanup(node);
             free(node);
+            --ht->count;
 
             return 0;
         }
