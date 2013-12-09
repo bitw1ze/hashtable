@@ -26,11 +26,8 @@ int main(int argc, const char *argv[])
     size_t size_out;
     size_t i, ntests;
 
-    if (argc != 2)
-        return -1;
-
-    ntests = atoi(argv[1]);
-
+    ntests = argc == 2 ? atoi(argv[1]) : 1000;
+    printf("testing hash table with %lu iterations each\n", ntests);
     srand(time(NULL));
     assert(htab_init(&ht, NULL, NULL, NULL, NULL) == 0);
 
